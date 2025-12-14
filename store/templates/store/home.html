@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block sidebar_widgets %}
+<div class="widget">
+    <h3>Top Sotuvlar</h3>
+    {% for item in best_sellers %}
+    <div class="mini-product">
+        <img src="{% if item.image %}{{ item.image.url }}{% endif %}" alt="img">
+        <div class="mini-info">
+            <h4><a href="{% url 'product_detail' item.slug %}" style="text-decoration:none; color:#333;">{{ item.name
+                    }}</a></h4>
+            <span>{{ item.price }} so'm</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Carousel -->
+{% if not request.GET.q and not request.GET.category %}
+<div class="carousel-container">
+    {% for product in hot_products %}
+    <div class="carousel-slide fade" style="display: {% if forloop.first %}flex{% else %}none{% endif %};">
+        <div class="slide-content">
+            <h2 class="slide-title">{{ product.name }}</h2>
+            <p class="slide-desc">{{ product.description|truncatewords:20 }}</p>
+            <a href="{% url 'product_detail' product.slug %}"
+                style="background: var(--primary-color); color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 10px rgba(230, 81, 0, 0.4);">Hozir
+                Xarid Qiling</a>
+        </div>
+        <img src="{% if product.image %}{{ product.image.url }}{% endif %}" class="slide-image">
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+        let i;
+        let slides = document.getElementsByClassName("carousel-slide");
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) { slideIndex = 1 }
+        slides[slideIndex - 1].style.display = "flex";
+        setTimeout(showSlides, 4000); // Change image every 4 seconds
+    }
+</script>
+{% endif %}
+
+<h2 style="margin-bottom: 15px;">
+    {% if request.GET.q %}
+    Qidiruv natijalari: "{{ request.GET.q }}"
+    {% elif request.GET.category %}
+    Kategoriya: {{ request.GET.category }}
+    {% else %}
+    Barcha Mahsulotlar
+    {% endif %}
+</h2>
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card" onclick="location.href='{% url 'product_detail' product.slug %}'"
+        style="cursor: pointer;">
+        <div class="card-img-wrapper">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img">
+            {% else %}
+            <div style="color: #ccc;">Rasm yo'q</div>
+            {% endif %}
+        </div>
+        <div class="card-category">{{ product.category.name }}</div>
+        <h3 class="card-title" title="{{ product.name }}">{{ product.name }}</h3>
+        <div class="card-price">{{ product.price }} so'm</div>
+
+        <form action="{% url 'cart_add' product.id %}" method="post" onclick="event.stopPropagation();">
+            {% csrf_token %}
+            <button type="submit" class="btn-add">Savatga</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Hozircha mahsulotlar yo'q.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

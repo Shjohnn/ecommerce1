@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Kirish - Uzum Market{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="text-align: center;">Kirish</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Simple form rendering, can be improved -->
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <small style="color: red">{{ field.errors }}</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit">Kirish</button>
+    </form>
+    <p style="text-align: center; margin-top: 15px;">
+        Akkauntingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'tish</a>
+    </p>
+</div>
+{% endblock %}

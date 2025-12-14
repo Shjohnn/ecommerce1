@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Ro'yxatdan o'tish - Uzum Market{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="text-align: center;">Ro'yxatdan o'tish</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <small style="color: grey; display: block; font-size: 0.8em;">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+            <small style="color: red">{{ field.errors }}</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit">Ro'yxatdan o'tish</button>
+    </form>
+</div>
+{% endblock %}

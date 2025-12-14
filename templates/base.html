@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Uzum Market Clone{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+
+        <!-- Brand -->
+        <a href="{% url 'home' %}" class="brand">Uzum</a>
+
+        <!-- Search -->
+        <div style="flex: 1; margin: 0 40px; display: flex; justify-content: center;">
+            <form action="{% url 'home' %}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Mahsulotlarni izlash..." class="search-input"
+                    value="{{ request.GET.q|default:'' }}">
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+        </div>
+
+        <!-- Links -->
+        <div class="nav-links" style="display: flex; align-items: center; gap: 20px;">
+            <a href="{% url 'cart_detail' %}"
+                style="position: relative; text-decoration: none; color: #333; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 1.2rem;">🛒</span> <span class="hide-mobile">Savat</span>
+                {% if cart_len > 0 %}
+                <span
+                    style="background: var(--primary-color); color: white; font-size: 0.75rem; padding: 2px 6px; border-radius: 10px;">{{
+                    cart_len }}</span>
+                {% endif %}
+            </a>
+
+            {% if user.is_authenticated %}
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="{% url 'profile' %}" style="text-decoration: none; font-weight: 500;">👤 {{ user.username
+                    }}</a>
+            </div>
+            {% else %}
+            <a href="{% url 'login' %}" style="text-decoration: none; color: #333;">Kirish</a>
+            <a href="{% url 'register' %}"
+                style="background: #e3f2fd; color: var(--secondary-color); padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Ro'yxatdan
+                o'tish</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Layout: Sidebar + Content -->
+    <div class="main-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <h3 class="sidebar-title">Kategoriyalar <span onclick="toggleSidebar()"
+                    style="float: right; cursor: pointer; font-size: 1.5rem; line-height: 1rem;">&times;</span></h3>
+            <ul class="category-list">
+                <li class="category-item">
+                    <a href="{% url 'home' %}"
+                        class="category-link {% if not request.GET.category %}active{% endif %}">Barchasi</a>
+                </li>
+                {% for cat in categories %}
+                <li class="category-item">
+                    <a href="{% url 'home' %}?category={{ cat.slug }}"
+                        class="category-link {% if request.GET.category == cat.slug %}active{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Sidebar Widgets (Best Sellers etc) -->
+            {% block sidebar_widgets %}
+            {% endblock %}
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area">
+            {% if messages %}
+            {% for message in messages %}
+            <div style="padding: 10px; background: #d4edda; color: #155724; border-radius: 6px; margin-bottom: 20px;">{{
+                message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>
